@@ -1,9 +1,9 @@
 import React,{Component} from 'react';
-import {View, Text,DrawerLayoutAndroid,Alert,Image} from 'react-native';
+import {WebView,Modal,View, Text,DrawerLayoutAndroid,Alert,Image,ScrollView,AsyncStorage} from 'react-native';
 import Header from './Components/Header';
-import Button from './Components/Button';
-import {Container,Content,Thumbnail,Left,Right,Body,Spinner,DeckSwiper,Card,CardItem} from 'native-base';
-import Cardslayout from './Components/CardsLayout';
+import ButtonCustom from './Components/Button';
+import {Toast,Icon,Container,Content,Thumbnail,Left,Right,Body,Spinner,DeckSwiper,Card,CardItem,Footer,FooterTab,Button} from 'native-base';
+import Viewer from './Components/Viewer';
 
 export default class App extends Component {
   state={
@@ -11,7 +11,11 @@ export default class App extends Component {
    url:'https://newsapi.org/v1/articles?source=techcrunch&apiKey=3f798ce8be64406496a05d8b04b83c2a',
    data:[],
    imgOfSource:'tc',
-   loading:true
+   loading:true,
+   webModal:false,
+   articleUrl:'',
+   saveIcon:'bookmark',
+   viewerModal:false
  }
  componentWillMount()
  {
@@ -22,12 +26,55 @@ export default class App extends Component {
    });
  }
 
+ Save= async (title,url)=>
+ {
+   try {
+  await AsyncStorage.setItem(title,url);
+  Alert.alert('Bookmark Saved!')
+} catch (error) {
+  // Error saving data
+  alert(error)
+}
+this.setState({saveIcon:'bookmark'});
+ }
+
+ onShare(title,url,description) {
+   Share.open({
+     share_text:description,
+     share_URL:url,
+     title:title
+   },function(e) {
+     console.log(e);
+   });
+ }
+
+ ShowWebModal()
+ {
+   return(
+     <Modal animationType={"slide"} transparent={false} visible={this.state.webModal} onRequestClose={() => {this.setState({webModal:false})}} >
+           <Header headerText="Powered By NewsAPI" />
+           <WebView source={{uri:this.state.articleUrl}} style={{marginTop: 20}} />
+     </Modal>
+   );
+
+ }
+
+ ViewerModal()
+ {
+   return(
+     <Modal animationType={"slide"} transparent={false} visible={this.state.viewerModal} onRequestClose={() => {this.setState({viewerModal:false})}} >
+        <Viewer />
+     </Modal>
+   );
+
+ }
+
  show(){
 
   if(this.state.loading===true)
   return(<Spinner color="red"/>)
   else {
-    Alert.alert(this.state.data.toString());
+
     return(
 
       <Container>
@@ -49,10 +96,25 @@ export default class App extends Component {
                                     <Image style={{ resizeMode: 'cover', width: 500,height:300 }} source={{uri:item.urlToImage}} />
                                 </CardItem>
                                 <CardItem>
+                                <ScrollView>
 
                                     <Text>{item.description}</Text>
+                                </ScrollView>
                                 </CardItem>
                                 <CardItem>
+                                <Container>
+                                  <Footer >
+                                    <FooterTab>
+                                  <Button success onPress={()=>this.setState({webModal:true,articleUrl:item.url})}>
+                                    <Icon name='eye' />
+                                  </Button>
+
+                                <Button danger onPress={()=>this.Save(item.title,item.url)}>
+                                  <Icon name={this.state.saveIcon} />
+                                </Button>
+                          </FooterTab>
+                        </Footer>
+                      </Container>
 
                                 </CardItem>
                             </Card>
@@ -72,7 +134,20 @@ export default class App extends Component {
             <Header headerText="Select News Source"/>
                 <Container>
                   <Content>
-                   <Button onPress={()=>{
+                  <ButtonCustom onPress={()=>this.setState({viewerModal:true})}>
+                  <Text style={{alignSelf: 'center',
+                  color: '#007aff',
+                  fontSize: 16,
+                  fontWeight: '600',
+                  paddingTop: 10,
+                  paddingBottom: 10}}>
+                    Bookmarks
+                  </Text>
+
+
+                  </ButtonCustom>
+
+                   <ButtonCustom onPress={()=>{
                     const url="https://newsapi.org/v1/articles?source=ars-technica&apiKey=3f798ce8be64406496a05d8b04b83c2a"
                          this.setState({loading:true});
                          fetch(url,{method:'GET'}).then((response)=>response.json()) .catch((error)=>alert("There was an error. ")).then((response)=>{
@@ -99,15 +174,15 @@ export default class App extends Component {
                         Ars Technica
                       </Text>
 
-                    </Button>
+                    </ButtonCustom>
 
-                    <Button onPress={()=>{
+                    <ButtonCustom onPress={()=>{
                     const url="https://newsapi.org/v1/articles?source=techcrunch&apiKey=3f798ce8be64406496a05d8b04b83c2a"
                           this.setState({loading:true});
                           fetch(url,{method:'GET'}).then((response)=>response.json()) .catch((error)=>alert("There was an error. ")).then((response)=>{
                             //const obj_response=JSON.parse(response);
                             this.setState({
-                            source:'Ars Technica',
+                            source:'Tech Crunch',
                             url:url,
                             data:response.articles,
                             imgOfSource:'tc',
@@ -128,9 +203,9 @@ export default class App extends Component {
                          Tech Crunch
                        </Text>
 
-                     </Button>
+                     </ButtonCustom>
 
-                     <Button onPress={()=>{
+                     <ButtonCustom onPress={()=>{
                       const url="https://newsapi.org/v1/articles?source=business-insider&apiKey=3f798ce8be64406496a05d8b04b83c2a"
                             this.setState({loading:true});
                             fetch(url,{method:'GET'}).then((response)=>response.json()) .catch((error)=>alert("There was an error. ")).then((response)=>{
@@ -157,8 +232,8 @@ export default class App extends Component {
                           Business Insider
                         </Text>
 
-                      </Button>
-                      <Button onPress={()=>{
+                      </ButtonCustom>
+                      <ButtonCustom onPress={()=>{
                         const url="https://newsapi.org/v1/articles?source=engadget&apiKey=3f798ce8be64406496a05d8b04b83c2a"
                               this.setState({loading:true});
                               fetch(url,{method:'GET'}).then((response)=>response.json()) .catch((error)=>alert("There was an error. ")).then((response)=>{
@@ -185,8 +260,8 @@ export default class App extends Component {
                            Engadget
                          </Text>
 
-                       </Button>
-                       <Button onPress={()=>{
+                       </ButtonCustom>
+                       <ButtonCustom onPress={()=>{
                          const url="https://newsapi.org/v1/articles?source=hacker-news&apiKey=3f798ce8be64406496a05d8b04b83c2a"
                                this.setState({loading:true});
                                fetch(url,{method:'GET'}).then((response)=>response.json()) .catch((error)=>alert("There was an error. ")).then((response)=>{
@@ -214,15 +289,15 @@ export default class App extends Component {
                             Hacker News
                           </Text>
 
-                        </Button>
-                        <Button onPress={
+                        </ButtonCustom>
+                        <ButtonCustom onPress={
                           ()=>{
                             url="https://newsapi.org/v1/articles?source=mashable&apiKey=3f798ce8be64406496a05d8b04b83c2a"
                                   this.setState({loading:true});
                                   fetch(url,{method:'GET'}).then((response)=>response.json()) .catch((error)=>alert("There was an error. ")).then((response)=>{
                                     //const obj_response=JSON.parse(response);
                                     this.setState({
-                                    source:'Ars Technica',
+                                    source:'Mashable',
                                     url:url,
                                     data:response.articles,
                                     imgOfSource:'mashable',
@@ -243,11 +318,11 @@ export default class App extends Component {
                              Mashable
                            </Text>
 
-                         </Button>
+                         </ButtonCustom>
 
 
 
-                          <Button onPress={
+                          <ButtonCustom onPress={
                             ()=>{
                             const url="https://newsapi.org/v1/articles?source=recode&apiKey=3f798ce8be64406496a05d8b04b83c2a"
                                       this.setState({loading:true});
@@ -276,9 +351,9 @@ export default class App extends Component {
                                Recode
                              </Text>
 
-                           </Button>
+                           </ButtonCustom>
 
-                           <Button onPress={
+                           <ButtonCustom onPress={
                              ()=>{
                               const url="https://newsapi.org/v1/articles?source=reddit-r-all&apiKey=3f798ce8be64406496a05d8b04b83c2a"
                                      this.setState({loading:true});
@@ -308,16 +383,16 @@ export default class App extends Component {
                                 Reddit-r-all
                               </Text>
 
-                            </Button>
+                            </ButtonCustom>
 
-                            <Button onPress={
+                            <ButtonCustom onPress={
                               ()=>{
                                 const url="https://newsapi.org/v1/articles?source=tech-radar&apiKey=3f798ce8be64406496a05d8b04b83c2a"
                                          this.setState({loading:true});
                                          fetch(url,{method:'GET'}).then((response)=>response.json()) .catch((error)=>alert("There was an error. ")).then((response)=>{
                                            //const obj_response=JSON.parse(response);
                                            this.setState({
-                                           source:'Recode',
+                                           source:'TechRadar',
                                            url:url,
                                            data:response.articles,
                                            imgOfSource:'TechRadar',
@@ -339,16 +414,16 @@ export default class App extends Component {
                                  TechRadar
                                </Text>
 
-                             </Button>
+                             </ButtonCustom>
 
-                             <Button onPress={
+                             <ButtonCustom onPress={
                                ()=>{
                             const url="https://newsapi.org/v1/articles?source=the-verge&apiKey=3f798ce8be64406496a05d8b04b83c2a"
                                             this.setState({loading:true});
                                             fetch(url,{method:'GET'}).then((response)=>response.json()) .catch((error)=>alert("There was an error. ")).then((response)=>{
                                               //const obj_response=JSON.parse(response);
                                               this.setState({
-                                              source:'Recode',
+                                              source:'The Verge',
                                               url:url,
                                               data:response.articles,
                                               imgOfSource:'theVerge',
@@ -369,16 +444,16 @@ export default class App extends Component {
                                   The Verge
                                 </Text>
 
-                              </Button>
+                              </ButtonCustom>
 
-                              <Button onPress={
+                              <ButtonCustom onPress={
                                 ()=>{
                                 const url="https://newsapi.org/v1/articles?source=wired-de&apiKey=3f798ce8be64406496a05d8b04b83c2a"
                                              this.setState({loading:true});
                                              fetch(url,{method:'GET'}).then((response)=>response.json()) .catch((error)=>alert("There was an error. ")).then((response)=>{
                                                //const obj_response=JSON.parse(response);
                                                this.setState({
-                                               source:'Recode',
+                                               source:'Wired',
                                                url:url,
                                                data:response.articles,
                                                imgOfSource:'wired',
@@ -400,16 +475,16 @@ export default class App extends Component {
                                    Wired.de
                                  </Text>
 
-                               </Button>
+                               </ButtonCustom>
 
-                               <Button onPress={
+                               <ButtonCustom onPress={
                                  ()=>{
                                   const url="https://newsapi.org/v1/articles?source=the-next-web&apiKey=3f798ce8be64406496a05d8b04b83c2a"
                                                  this.setState({loading:true});
                                                  fetch(url,{method:'GET'}).then((response)=>response.json()) .catch((error)=>alert("There was an error. ")).then((response)=>{
                                                    //const obj_response=JSON.parse(response);
                                                    this.setState({
-                                                   source:'Recode',
+                                                   source:'The Next Web',
                                                    url:url,
                                                    data:response.articles,
                                                    imgOfSource:'tnw',
@@ -430,7 +505,7 @@ export default class App extends Component {
                                     The Next Web
                                   </Text>
 
-                                </Button>
+                                </ButtonCustom>
 
 
 
@@ -443,9 +518,14 @@ export default class App extends Component {
       return ( <DrawerLayoutAndroid drawerWidth={250} drawerPosition={DrawerLayoutAndroid.positions.Left}
         renderNavigationView={() => navigationView}>
         <View style={{flex: 1}}>
-            <Header headerText="devUPDATE!" />
 
+            <Header headerText="<tech/>UP!" />
+
+            <ScrollView>
             {this.show()}
+            {this.ShowWebModal()}
+            {this.ViewerModal()}
+            </ScrollView>
            </View>
           </DrawerLayoutAndroid> );
 }
