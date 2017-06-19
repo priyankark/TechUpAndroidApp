@@ -45,12 +45,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.devupdates",
+    package = "com.techup",
 )
 
 android_resource(
     name = "res",
-    package = "com.devupdates",
+    package = "com.techup",
     res = "src/main/res",
 )
 

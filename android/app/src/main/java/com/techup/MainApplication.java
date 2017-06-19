@@ -1,4 +1,4 @@
-package com.devupdates;
+package com.techup;
 
 import android.app.Application;
 

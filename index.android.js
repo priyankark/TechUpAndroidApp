@@ -13,7 +13,7 @@
  } from 'react-native';
  import App from './src/App';
 
- export default class devUPDATES extends Component {
+ export default class techUP extends Component {
    render() {
      return (
        <App/>
@@ -23,4 +23,4 @@
 
 
 
-AppRegistry.registerComponent('devUPDATES', () => devUPDATES);
+AppRegistry.registerComponent('techUP', () => techUP);
