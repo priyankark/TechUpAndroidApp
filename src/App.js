@@ -1,8 +1,7 @@
 import React,{Component} from 'react';
 import {WebView,Modal,View, Text,DrawerLayoutAndroid,Alert,Image,ScrollView,AsyncStorage} from 'react-native';
-import Header from './Components/Header';
 import ButtonCustom from './Components/Button';
-import {Toast,Icon,Container,Content,Thumbnail,Left,Right,Body,Spinner,DeckSwiper,Card,CardItem,Footer,FooterTab,Button} from 'native-base';
+import {Title,Toast,Container,Content,Thumbnail,Left,Right,Body,Spinner,DeckSwiper,Card,CardItem,Footer,FooterTab,Button,Header,Icon} from 'native-base';
 import Viewer from './Components/Viewer';
 
 export default class App extends Component {
@@ -131,7 +130,10 @@ this.setState({saveIcon:'bookmark'});
   render()
   {
      var navigationView = ( <View style={{flex: 1, backgroundColor: '#d3d3d3'}}>
-            <Header headerText="Select News Source"/>
+            <Header>
+              <Title style={{paddingTop:10}}> Select source
+              </Title>
+              </Header>
                 <Container>
                   <Content>
                   <ButtonCustom onPress={()=>this.setState({viewerModal:true})}>
@@ -516,10 +518,20 @@ this.setState({saveIcon:'bookmark'});
     );
 
       return ( <DrawerLayoutAndroid drawerWidth={250} drawerPosition={DrawerLayoutAndroid.positions.Left}
-        renderNavigationView={() => navigationView}>
+        renderNavigationView={() => navigationView} ref="MyDrawer">
         <View style={{flex: 1}}>
 
-            <Header headerText="<tech/>UP!" />
+        <Header style={{backgroundColor:"maroon"}}>
+        <Left>
+        <Button style={{backgroundColor:"maroon"}} onPress={()=>this.refs["MyDrawer"].openDrawer()} >
+           <Icon name="menu"/>
+         </Button>
+        </Left>
+                   <Body>
+                       <Title> tech UP! </Title>
+                   </Body>
+
+        </Header>
 
             <ScrollView>
             {this.show()}
