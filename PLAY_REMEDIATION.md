@@ -16,13 +16,14 @@ Package: com.techup. Play app ID: 4975525602975316646.
 - Added a persistent in-app Contact us button with an offline-readable contact page and link to the same public contact URL. JSX parse and whitespace checks pass. Native validation remains pending.
 - Completed and saved the Health apps declaration (no health features).
 - Completed and saved the News and Magazine declaration: same developer entity Priyankar Kumar, public contact URL, commercial/private category, news aggregator. The form states no additional credentials are required. These declarations are saved for review, not approved.
+- Completed and saved Government apps (not a government app) and Advertising ID (no use in the app source/native dependencies).
 - Existing Target audience and Data safety drafts were already pending; they have not been overwritten or submitted by this change.
 
 ## Required before restoration
 
 1. Locate the original signing keystore and its password/alias. The owner has been asked where to find the old computer or backup.
 2. Modernize the Android build to meet current target API and native-library requirements, replace the stale feed, and show original publishers/authors and publication dates. Preserve bookmarks and source selection.
-3. Verify the final binary's actual data flows and complete accurate Data safety/privacy, advertising ID and government-app declarations.
+3. Verify the final binary's actual data flows and verify the existing Data safety/privacy draft against that binary and recheck the saved declarations.
 4. Test the signed update and submit it with the completed declarations. Google must approve before the red removal/rejection state clears.
 
 No new Android binary has been built, signed, uploaded or submitted. This branch is a partial remediation, not a store-ready release.
