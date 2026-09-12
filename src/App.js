@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import {WebView,Modal,View, Text,DrawerLayoutAndroid,Alert,Image,ScrollView,AsyncStorage} from 'react-native';
+import {WebView,Modal,View, Text,DrawerLayoutAndroid,Alert,Image,ScrollView,AsyncStorage,Linking,TouchableOpacity} from 'react-native';
 import ButtonCustom from './Components/Button';
 import {Title,Toast,Container,Content,Thumbnail,Left,Right,Body,Spinner,DeckSwiper,Card,CardItem,Footer,FooterTab,Button,Header,Icon} from 'native-base';
 import Viewer from './Components/Viewer';
@@ -14,7 +14,8 @@ export default class App extends Component {
    webModal:false,
    articleUrl:'',
    saveIcon:'bookmark',
-   viewerModal:false
+   viewerModal:false,
+   contactModal:false
  }
  componentWillMount()
  {
@@ -538,6 +539,25 @@ this.setState({saveIcon:'bookmark'});
             {this.ShowWebModal()}
             {this.ViewerModal()}
             </ScrollView>
+            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Contact us"
+              onPress={()=>this.setState({contactModal:true})}
+              style={{padding:16,backgroundColor:'#fff',borderTopWidth:1,borderColor:'#ddd'}}>
+              <Text style={{color:'#007aff',textAlign:'center',fontSize:16}}>Contact us</Text>
+            </TouchableOpacity>
+            <Modal visible={this.state.contactModal} animationType="slide"
+              onRequestClose={()=>this.setState({contactModal:false})}>
+              <ScrollView contentContainerStyle={{padding:24,paddingTop:40}}>
+                <Text style={{fontSize:26,fontWeight:'bold',marginBottom:20}}>Contact us</Text>
+                <Text style={{fontSize:18,marginBottom:16}}>Tech UP is an independent technology news reader developed by Priyankar Kumar. Original articles belong to their respective publishers.</Text>
+                <Text selectable style={{fontSize:18,marginBottom:16}}>For support, privacy questions or attribution concerns, email priyankar.kumar98@gmail.com. Include the article URL for content-related requests.</Text>
+                <TouchableOpacity accessibilityRole="link" onPress={()=>Linking.openURL('https://priyankark.github.io/TechUpAndroidApp/#contact').catch(()=>Alert.alert('Unable to open website','Please email priyankar.kumar98@gmail.com.'))} style={{paddingVertical:16}}>
+                  <Text style={{fontSize:18,color:'#007aff'}}>Open contact website</Text>
+                </TouchableOpacity>
+                <TouchableOpacity accessibilityRole="button" onPress={()=>this.setState({contactModal:false})} style={{paddingVertical:16}}>
+                  <Text style={{fontSize:18,color:'#007aff'}}>Back to news</Text>
+                </TouchableOpacity>
+              </ScrollView>
+            </Modal>
            </View>
           </DrawerLayoutAndroid> );
 }
